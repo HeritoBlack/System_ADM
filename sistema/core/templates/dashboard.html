@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row">
+
+  <!-- Empresas -->
+  <div class="col-md-6">
+    <div class="card text-white bg-primary mb-3 shadow">
+      <div class="card-body">
+        <h5 class="card-title">Empresas</h5>
+        <h2>{{ total_empresas }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- Funcionários -->
+  <div class="col-md-6">
+    <div class="card text-white bg-success mb-3 shadow">
+      <div class="card-body">
+        <h5 class="card-title">Funcionários</h5>
+        <h2>{{ total_funcionarios }}</h2>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Lista recente -->
+<div class="card shadow mt-4">
+  <div class="card-body">
+    <h5 class="card-title">Funcionários Recentes</h5>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Cargo</th>
+          <th>Empresa</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in funcionarios_recentes %}
+        <tr>
+          <td>{{ f.nome }}</td>
+          <td>{{ f.cargo }}</td>
+          <td>{{ f.empresa.nome }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<canvas id="grafico"></canvas>
+
+<script>
+const ctx = document.getElementById('grafico');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Empresas', 'Funcionários'],
+        datasets: [{
+            label: 'Quantidade',
+            data: [{{ total_empresas }}, {{ total_funcionarios }}],
+            borderWidth: 1
+        }]
+    }
+});
+</script>
+
+{% endblock %}
+

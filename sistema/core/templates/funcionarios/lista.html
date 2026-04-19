@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Funcionários</h2>
+
+<a class="btn btn-primary mb-3" href="{% url 'criar_funcionario' %}">
+    Novo Funcionário
+</a>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Cargo</th>
+      <th>Empresa</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in funcionarios %}
+    <tr>
+      <td>{{ f.nome }}</td>
+      <td>{{ f.cargo }}</td>
+      <td>{{ f.empresa.nome }}</td>
+      <td>
+        <a class="btn btn-warning btn-sm" href="{% url 'editar_funcionario' f.id %}">Editar</a>
+        <form method="POST" action="{% url 'excluir_funcionario' funcionario.id %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger btn-sm">
+        Excluir
+    </button>
+</form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
