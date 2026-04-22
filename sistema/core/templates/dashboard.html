@@ -1,77 +1,100 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2 class="mb-4">Dashboard</h2>
+<h2>Dashboard</h2>
 
-<div class="row">
-
-  <!-- Empresas -->
-  <div class="col-md-6">
-    <div class="card text-white bg-primary mb-3 shadow">
-      <div class="card-body">
-        <h5 class="card-title">Empresas</h5>
-        <h2>{{ total_empresas }}</h2>
-      </div>
+<!-- KPIs -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm">
+            <h6>Total Empresas</h6>
+            <h3>{{ total_empresas }}</h3>
+        </div>
     </div>
-  </div>
 
-  <!-- Funcionários -->
-  <div class="col-md-6">
-    <div class="card text-white bg-success mb-3 shadow">
-      <div class="card-body">
-        <h5 class="card-title">Funcionários</h5>
-        <h2>{{ total_funcionarios }}</h2>
-      </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm">
+            <h6>Total Funcionários</h6>
+            <h3>{{ total_funcionarios }}</h3>
+        </div>
     </div>
-  </div>
+</div>
+
+<!-- GRÁFICOS -->
+<div class="row mt-4">
+
+    <!-- Barras -->
+    <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+            <h6>Funcionários por Empresa</h6>
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Pizza -->
+    <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+            <h6>Distribuição</h6>
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
 
 </div>
 
-<!-- Lista recente -->
-<div class="card shadow mt-4">
-  <div class="card-body">
-    <h5 class="card-title">Funcionários Recentes</h5>
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Cargo</th>
-          <th>Empresa</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for f in funcionarios_recentes %}
-        <tr>
-          <td>{{ f.nome }}</td>
-          <td>{{ f.cargo }}</td>
-          <td>{{ f.empresa.nome }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+<!-- Linha -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card p-3 shadow-sm">
+            <h6>Crescimento</h6>
+            <canvas id="lineChart"></canvas>
+        </div>
+    </div>
 </div>
 
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<canvas id="grafico"></canvas>
-
 <script>
-const ctx = document.getElementById('grafico');
+    const nomes = {{ nomes_empresas|safe }};
+    const valores = {{ qtd_funcionarios|safe }};
+    const dias = {{ dias|safe }};
+    const crescimento = {{ valores|safe }};
 
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Empresas', 'Funcionários'],
-        datasets: [{
-            label: 'Quantidade',
-            data: [{{ total_empresas }}, {{ total_funcionarios }}],
-            borderWidth: 1
-        }]
-    }
-});
+    // Gráfico de barras
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: nomes,
+            datasets: [{
+                label: 'Funcionários',
+                data: valores
+            }]
+        }
+    });
+
+    // Gráfico de pizza
+    new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: {
+            labels: nomes,
+            datasets: [{
+                data: valores
+            }]
+        }
+    });
+
+    // Gráfico de linha
+    new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+            labels: dias,
+            datasets: [{
+                label: 'Crescimento',
+                data: crescimento,
+                fill: true
+            }]
+        }
+    });
 </script>
 
 {% endblock %}
-

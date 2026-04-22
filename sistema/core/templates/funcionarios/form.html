@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Novo Funcionário</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+        <label>Nome:</label>
+        {{ form.nome }}
+    </div>
+
+    <div class="mb-3">
+        <label>Cargo:</label>
+        {{ form.cargo }}
+    </div>
+
+    <div class="mb-3">
+        <label>Empresa:</label>
+        {{ form.empresa }}
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Salvar
+    </button>
+
+    <a href="{% url 'lista_funcionarios' %}" class="btn btn-secondary">
+        Voltar
+    </a>
+</form>
+
+{% endblock %}

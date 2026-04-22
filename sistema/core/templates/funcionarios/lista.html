@@ -23,16 +23,27 @@
       <td>{{ f.cargo }}</td>
       <td>{{ f.empresa.nome }}</td>
       <td>
-        <a class="btn btn-warning btn-sm" href="{% url 'editar_funcionario' f.id %}">Editar</a>
-        <form method="POST" action="{% url 'excluir_funcionario' funcionario.id %}" style="display:inline;">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger btn-sm">
-        Excluir
-    </button>
-</form>
+        <!-- Editar -->
+        <a class="btn btn-warning btn-sm" href="{% url 'editar_funcionario' f.id %}">
+            Editar
+        </a>
+
+        <!-- Excluir (CORRIGIDO) -->
+        <form method="POST" action="{% url 'excluir_funcionario' f.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm"
+                    onclick="return confirm('Tem certeza que deseja excluir este funcionário?')">
+                Excluir
+            </button>
+        </form>
       </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4">Nenhum funcionário cadastrado.</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+
 {% endblock %}

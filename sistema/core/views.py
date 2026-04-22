@@ -3,6 +3,22 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Empresa, Funcionario
 from .forms import EmpresaForm, FuncionarioForm
+from django.contrib.auth import login
+from .forms import RegistroForm
+from django.db.models import Count
+from django.utils.timezone import now
+from datetime import timedelta
+
+#CADASTRO/LOGIN
+def registrar_usuario(request):
+    form = RegistroForm(request.POST or None)
+
+    if form.is_valid():
+        user = form.save()
+        login(request, user)  # já loga automaticamente
+        return redirect('dashboard')
+
+    return render(request, 'auth/registro.html', {'form': form})
 
 # EMPRESAS
 @login_required
@@ -97,10 +113,33 @@ def excluir_funcionario(request, id):
 def dashboard(request):
     total_empresas = Empresa.objects.count()
     total_funcionarios = Funcionario.objects.count()
-    funcionarios_recentes = Funcionario.objects.order_by('-id')[:5]
 
-    return render(request, 'dashboard.html', {
+    # Funcionários por empresa
+    dados = (
+        Funcionario.objects
+        .values('empresa__nome')
+        .annotate(total=Count('id'))
+    )
+
+    nomes_empresas = [d['empresa__nome'] for d in dados]
+    qtd_funcionarios = [d['total'] for d in dados]
+
+    # Funcionários últimos 7 dias (simulação se não tiver campo data)
+    dias = []
+    valores = []
+
+    for i in range(7):
+        dia = now().date() - timedelta(days=i)
+        dias.append(str(dia))
+        valores.append(Funcionario.objects.count())  # simples (pode melhorar depois)
+
+    context = {
         'total_empresas': total_empresas,
         'total_funcionarios': total_funcionarios,
-        'funcionarios_recentes': funcionarios_recentes
-    })
+        'nomes_empresas': nomes_empresas,
+        'qtd_funcionarios': qtd_funcionarios,
+        'dias': dias[::-1],
+        'valores': valores[::-1],
+    }
+
+    return render(request, 'dashboard.html', context)
